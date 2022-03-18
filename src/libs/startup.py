@@ -1,4 +1,5 @@
 import os
+import webbrowser
 from cryptography.fernet import Fernet
 from libs import preprocessing, tf_idf
 
@@ -47,3 +48,28 @@ def encrypt_docs():
         enc_file.write(ciphertext)
         doc_file.close()
         enc_file.close()
+
+
+def open_doc(doc: str):
+    """
+    Decrypt file and open it in a text editor
+
+    Parameter
+    ---------
+        doc: str
+            Name of the document to be encrypted
+    """
+
+    with open("data/secret.key", "rb") as key_file:
+        cipher = Fernet(key_file.read())
+
+    doc_file = open(f"data/encrypted/{doc}", "rb")
+    data = cipher.decrypt(doc_file.read())
+    out_file = open("data/de_temp.txt", "wb")
+    out_file.write(data)
+
+    doc_file.close()
+    out_file.close()
+
+    webbrowser.open(os.path.abspath("data/de_temp.txt"))
+
