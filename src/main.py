@@ -1,14 +1,14 @@
 import pandas as pd
-from libs import startup, search
+from libs import search, system
 
 
 if __name__ == "__main__":
     print("Starting server...")
-    startup.mkdirs()
+    system.mkdirs()
     print("Computing metadata: TF and IFD")
-    startup.compute_metadata()
+    system.compute_metadata()
     print("Encrypting documents")
-    startup.encrypt_docs()
+    system.encrypt_docs()
 
     try:
         while True:
@@ -23,9 +23,9 @@ if __name__ == "__main__":
                 doc = results_df.iloc[int(doc_id)]["Document"]
                 # Decrypt document and open with webbrowser
                 print("Opening ", doc)
-                startup.open_doc(doc)
+                system.open_doc(doc)
     except KeyboardInterrupt:
         print()
         print("Shutting down server...")
-        startup.cleanup()
+        system.cleanup()
         print("Goodbye!")
