@@ -1,0 +1,8 @@
+DOCS_PATH = "data/docs"
+SECRET_KEY_PATH = "data/secret.key"
+ENC_DOCS_PATH = "data/encrypted"
+METADATATA_PATH = "data/meta"
+IDF_CSV_PATH = "data/meta/_idf.csv"
+IDF_CSV = "_idf.csv"
+DEC_DOC_PATH = "data/de_temp.txt"
+NLTK_DATA_PATH = "venv/nltk_data"

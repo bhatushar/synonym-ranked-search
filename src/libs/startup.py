@@ -2,7 +2,7 @@ import os
 import shutil
 import webbrowser
 from cryptography.fernet import Fernet
-from libs import preprocessing, tf_idf
+from libs import env, preprocessing, tf_idf
 
 
 def mkdirs():
@@ -10,9 +10,9 @@ def mkdirs():
     Create directories that are needed for program execution
     """
 
-    os.makedirs("data/docs", exist_ok=True)
-    os.makedirs("data/encrypted", exist_ok=True)
-    os.makedirs("data/meta", exist_ok=True)
+    os.makedirs(env.DOCS_PATH, exist_ok=True)
+    os.makedirs(env.ENC_DOCS_PATH, exist_ok=True)
+    os.makedirs(env.METADATATA_PATH, exist_ok=True)
 
 
 def compute_metadata():
@@ -25,19 +25,19 @@ def compute_metadata():
 
     ref_count: dict[str, int] = dict()  # Count how many documents contain a term
 
-    for doc in os.listdir("data/docs"):
-        with open(f"data/docs/{doc}", "r", encoding="utf-8") as file:
+    for doc in os.listdir(env.DOCS_PATH):
+        with open(f"{env.DOCS_PATH}/{doc}", "r", encoding="utf-8") as file:
             text = file.read()
         words = preprocessing.sanitize_text(text)
         df = tf_idf.term_frequency(words)
-        df.to_csv(f"data/meta/{doc}.csv")
+        df.to_csv(f"{env.METADATATA_PATH}/{doc}.csv")
 
         # Record document references
         for term in df["Terms"]:
             ref_count[term] = ref_count.get(term, 0) + 1
 
     df = tf_idf.inverse_document_frequency(ref_count)
-    df.to_csv("data/meta/_idf.csv")
+    df.to_csv(env.IDF_CSV_PATH)
 
 
 def encrypt_docs():
@@ -47,14 +47,14 @@ def encrypt_docs():
     """
 
     # Initialize cipher with secret key
-    with open("data/secret.key", "rb") as key_file:
+    with open(env.SECRET_KEY_PATH, "rb") as key_file:
         cipher = Fernet(key_file.read())
 
     # Encrypt all files in data/docs/ while keeping the original name
-    for doc in os.listdir("data/docs"):
-        doc_file = open(f"data/docs/{doc}", "rb")
+    for doc in os.listdir(env.DOCS_PATH):
+        doc_file = open(f"{env.DOCS_PATH}/{doc}", "rb")
         ciphertext = cipher.encrypt(doc_file.read())
-        enc_file = open(f"data/encrypted/{doc}", "wb")
+        enc_file = open(f"{env.ENC_DOCS_PATH}/{doc}", "wb")
         enc_file.write(ciphertext)
         doc_file.close()
         enc_file.close()
@@ -70,18 +70,18 @@ def open_doc(doc: str):
             Name of the document to be encrypted
     """
 
-    with open("data/secret.key", "rb") as key_file:
+    with open(env.SECRET_KEY_PATH, "rb") as key_file:
         cipher = Fernet(key_file.read())
 
-    doc_file = open(f"data/encrypted/{doc}", "rb")
+    doc_file = open(f"{env.ENC_DOCS_PATH}/{doc}", "rb")
     data = cipher.decrypt(doc_file.read())
-    out_file = open("data/de_temp.txt", "wb")
+    out_file = open(env.DEC_DOC_PATH, "wb")
     out_file.write(data)
 
     doc_file.close()
     out_file.close()
 
-    webbrowser.open(os.path.abspath("data/de_temp.txt"))
+    webbrowser.open(os.path.abspath(env.DEC_DOC_PATH))
 
 
 def cleanup():
@@ -90,7 +90,7 @@ def cleanup():
     This includes decrypted, encrypted, and metadata files.
     """
 
-    if os.path.exists("data/de_temp.txt"):
-        os.remove("data/de_temp.txt")
-    shutil.rmtree("data/encrypted")
-    shutil.rmtree("data/meta")
+    if os.path.exists(env.DEC_DOC_PATH):
+        os.remove(env.DEC_DOC_PATH)
+    shutil.rmtree(env.ENC_DOCS_PATH)
+    shutil.rmtree(env.METADATATA_PATH)

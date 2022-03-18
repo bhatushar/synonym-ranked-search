@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
-from libs import preprocessing
+from libs import env, preprocessing
 
 
 def query_idf(query_terms: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -20,7 +20,7 @@ def query_idf(query_terms: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
             Second element is an array of IDF.
     """
 
-    idf_df = pd.read_csv("data/meta/_idf.csv")
+    idf_df = pd.read_csv(env.IDF_CSV_PATH)
     rows = idf_df.loc[
         idf_df["Terms"].isin(query_terms)
     ]  # Rows of DF which contain query terms
@@ -93,10 +93,10 @@ def find_docs(query: str) -> list[tuple[str, float]]:
 
     scores: list[(str, float)] = []
     meta_docs = [
-        doc for doc in os.listdir("data/meta") if doc != "_idf.csv"
+        doc for doc in os.listdir(env.METADATATA_PATH) if doc != env.IDF_CSV
     ]  # Ignore IDF file
     for doc in meta_docs:
-        tf = query_tf(query_terms, f"data/meta/{doc}")
+        tf = query_tf(query_terms, f"{env.METADATATA_PATH}/{doc}")
         # Compute similarity score
         tf_weight: float = np.sqrt(np.square(tf).sum())  # sqrt(sum(tf ^ 2))
         tf_idf_sum: float = np.multiply(tf, idf).sum()  # sum(tf * idf)
