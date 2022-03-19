@@ -1,4 +1,5 @@
 DOCS_PATH = "data/docs"
+DIGESTS_PATH = "data/digests"
 SECRET_KEY_PATH = "data/secret.key"
 ENC_DOCS_PATH = "data/encrypted"
 METADATATA_PATH = "data/meta"

@@ -1,10 +1,13 @@
+import os
 import pandas as pd
-from libs import search, system
+from libs import env, search, system
 
 
 if __name__ == "__main__":
-    print("Starting server...")
+    print("Starting application...")
     system.mkdirs()
+    system.cleanup_deleted()
+    system.check_changes()
     print("Computing metadata: TF and IFD")
     system.compute_metadata()
     print("Encrypting documents")
@@ -26,6 +29,7 @@ if __name__ == "__main__":
                 system.open_doc(doc)
     except KeyboardInterrupt:
         print()
-        print("Shutting down server...")
-        system.cleanup()
+        print("Removing decrypted file...")
+        if os.path.exists(env.DEC_DOC_PATH):
+            os.remove(env.DEC_DOC_PATH)
         print("Goodbye!")
