@@ -1,5 +1,7 @@
+import os
 import numpy as np
 import pandas as pd
+from libs import env
 
 
 def term_frequency(words: np.ndarray) -> pd.DataFrame:
@@ -35,7 +37,7 @@ def term_frequency(words: np.ndarray) -> pd.DataFrame:
     return df
 
 
-def inverse_document_frequency(ref_count: dict[str, int]) -> pd.DataFrame:
+def inverse_document_frequency() -> pd.DataFrame:
     """
     Compute the weighted inverse document frequency.
 
@@ -60,18 +62,16 @@ def inverse_document_frequency(ref_count: dict[str, int]) -> pd.DataFrame:
             Data frame is sorted on `Terms` column.
     """
 
-    term_count = len(ref_count)
-    refs = list(ref_count.values())
-    weighted_idf = [term_count] * term_count
-    weighted_idf = np.divide(weighted_idf, refs)
+    terms = []
+    tf_files = [file for file in os.listdir(env.METADATATA_PATH) if file != env.IDF_CSV]
+    for file in tf_files:
+        tf_df = pd.read_csv(f"{env.METADATATA_PATH}/{file}")
+        terms.extend(tf_df["Terms"].to_list())
+    terms, ref_count = np.unique(terms, return_counts=True)
+    weighted_idf = [terms.size] * terms.size
+    weighted_idf = np.divide(weighted_idf, ref_count)
     weighted_idf = np.log1p(weighted_idf)
     df = pd.DataFrame(
-        {
-            "Terms": ref_count.keys(),
-            "Reference Count": ref_count.values(),
-            "IDF": weighted_idf,
-        }
+        {"Terms": terms, "Reference Count": ref_count, "IDF": weighted_idf}
     )
-    df = df.sort_values(by=["Terms"])
-    df = df.reset_index(drop=True)
     return df

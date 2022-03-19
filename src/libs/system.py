@@ -23,8 +23,6 @@ def compute_metadata():
     The records are stored in the ascending order of the keywords.
     """
 
-    ref_count: dict[str, int] = dict()  # Count how many documents contain a term
-
     for doc in os.listdir(env.DOCS_PATH):
         with open(f"{env.DOCS_PATH}/{doc}", "r", encoding="utf-8") as file:
             text = file.read()
@@ -32,11 +30,7 @@ def compute_metadata():
         df = tf_idf.term_frequency(words)
         df.to_csv(f"{env.METADATATA_PATH}/{doc}.csv")
 
-        # Record document references
-        for term in df["Terms"]:
-            ref_count[term] = ref_count.get(term, 0) + 1
-
-    df = tf_idf.inverse_document_frequency(ref_count)
+    df = tf_idf.inverse_document_frequency()
     df.to_csv(env.IDF_CSV_PATH)
 
 
