@@ -48,7 +48,7 @@ The documents are encrypted using Fernet's cipher. The cryptography key is store
 This project employees a TF-IDF based ranked searching algorithm. The similarity of a document to a query is computed by the rank function:
 
 <!-- $$
-\text{Rank}(Q, d) = \frac{\sum_{w \in Q} TF(d, w) \times IDF(w)}{\sqrt{\sum_{w \in Q} (TF{d, w})^2} \times \sqrt{\sum_{w \in Q} (IDF(w))^2}}
+\text{Rank}(Q, d) = \frac{\sum_{w \in Q} TF(d, w) \times IDF(w)}{\sqrt{\sum_{w \in Q} (TF({d, w}))^2} \times \sqrt{\sum_{w \in Q} (IDF(w))^2}}
 $$ -->
 
 <div align="center"><img src="assets/rank-function.jpg"></div>
