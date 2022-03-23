@@ -99,7 +99,7 @@ python src/main.py
 
 After metadata computation has finished, the user can enter their search query. Longer queries tend to produce more accurate research but take longer to be processed.
 
-Once the search results are returned, a file can be decrypted an opened by it's index. Enter `q` to return to query input.
+Once the search results are returned, a file can be decrypted an opened by it's index. Enter `q` to return to query input. In search mode, press `Ctrl-C` to terminate the program.
 
 ## Testing
 
