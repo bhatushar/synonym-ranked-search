@@ -8,7 +8,7 @@ if __name__ == "__main__":
     system.mkdirs()
     system.cleanup_deleted()
     system.check_changes()
-    print("Computing metadata: TF and IFD")
+    print("Computing metadata: TF and IDF")
     system.compute_metadata()
     print("Encrypting documents")
     system.encrypt_docs()
